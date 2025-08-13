@@ -7,6 +7,25 @@ library(ggplot2)
 library(dplyr)
 
 # Note uses slice_sample, so each plot may differ slightly
+diamond_plot <- ggplot(data = diamonds %>% 
+         filter(x > 3) %>% # drop rows with x = 0
+         slice_sample(n = 10000),
+       mapping = aes(x = x, y = price, color = color)) + 
+  geom_point(mapping = aes(size = carat), alpha = 0.75) + 
+  discrete_scale(aesthetics = "color",
+                 palette = \(x) hcl.colors(n = 7, palette = "Geyser")) + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title = element_blank(),
+        axis.text = element_blank())
+diamond_plot
+ggsave(filename = "output/diamonds.png",
+       plot = diamond_plot,
+       units = "mm",
+       width = 148,
+       height = 105)
+
+# Earlier attempts with different palettes & variables
 ggplot(data = diamonds %>% slice_sample(n = 100), 
        mapping = aes(x = x, y = y)) + 
   geom_density_2d_filled(contour_var = "count") + 
@@ -40,3 +59,12 @@ ggplot(data = diamonds %>% slice_sample(n = 100),
   theme_bw() + 
   theme(legend.position = "none", 
         axis.title = element_blank())
+
+ggplot(data = diamonds %>% slice_sample(n = 1000),
+       mapping = aes(x = x, y = price, color = color)) + 
+  geom_point() + 
+  discrete_scale(aesthetics = "color",
+                 palette = \(x) rev(colorRampPalette(geyser_left)(x)))
+
+
+
